@@ -18,7 +18,7 @@ export function generateAPIKey() {
  */
 export async function authenticateKey(key: string) {
   // If the key exists in the table, that's enough for us!
-  const rows = await client.query('SELECT * FROM api_keys WHERE key=SHA2($1)', key)
+  const rows = await client.query('SELECT * FROM api_keys WHERE key=SHA2("$1")', key)
   
   return Array.isArray(rows[0]) && rows[0].length === 1
 }
