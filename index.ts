@@ -2,27 +2,34 @@
 import dotenv from 'dotenv'
 dotenv.config()
 
+import fs from 'fs'
 import Fastify from 'fastify'
-import { authenticateKey, generateAPIKey } from './util/keys'
-
-interface BaseReq {
-  key: string
-}
+import { authenticateKey } from './util/keys'
 
 const app = Fastify({
   logger: true
 })
 
-app.post('/', async (req, res) => {
+// preValidation hook to ensure authentication
+app.addHook('preValidation', async (req, res) => {
   const body = req.body as BaseReq
+  const querystring = req.query as BaseReq
 
-  if (await authenticateKey(body.key)) {
-    res.send('Welcome to the Botti API! You are authenticated!')
+  if (!await authenticateKey(body?.key || querystring?.key)) {
+    res.send('Welcome to the Botti API! You are not authenticated. Please sign up in order to get an API key :)')
+    return
   }
-
-  res.send('Welcome to the Botti API! You are not authenticated. Please sign up in order to get an API key :)')
 })
 
+// Go through each route and register it
+fs.readdirSync(__dirname + '/routes').forEach(async (file) => {
+  const props = await import(__dirname + '/routes/' + file)
+  props.register(app)
+
+  console.log('Resgistered route: ', file.split('.')[0])
+})
+
+// Listen!
 app.listen({ port: 3000 }, () => {
   console.log('Server up and running!')
 })

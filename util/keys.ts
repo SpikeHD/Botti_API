@@ -1,5 +1,4 @@
 import { client } from './mysql'
-import bcrypt from 'bcrypt'
 
 /**
  * Generate a 40 character long API key
@@ -21,5 +20,5 @@ export async function authenticateKey(key: string) {
   // If the key exists in the table, that's enough for us!
   const rows = await client.query('SELECT * FROM api_keys WHERE api_key=SHA2(?, 256)', key)
   
-  return Array.isArray(rows[0]) && rows[0].length === 1
+  return Array.isArray(rows[0]) && rows[0][0]
 }
