@@ -2,6 +2,10 @@ interface BaseReq {
   key: string
 }
 
+interface BaseQuery {
+  uid: string
+}
+
 interface PostsQuery {
   uid?: string
   username?: string

@@ -14,11 +14,14 @@ const app = Fastify({
 app.addHook('preValidation', async (req, res) => {
   const body = req.body as BaseReq
   const querystring = req.query as BaseReq
+  const auth = await authenticateKey(body?.key || querystring?.key)
 
-  if (!await authenticateKey(body?.key || querystring?.key)) {
+  if (isNaN(auth)) {
     res.send('Welcome to the Botti API! You are not authenticated. Please sign up in order to get an API key :)')
     return
   }
+
+  req.uid = auth
 })
 
 // Go through each route and register it
