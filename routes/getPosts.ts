@@ -9,12 +9,18 @@ export function register(app: FastifyInstance) {
     let posts: Post[] = []
 
     if (!(query.uid || query.username)) {
-      res.send('Please provide a `uid` or `username` in your query parameters.')
+      res.send({
+        success: false,
+        message: 'Please provide a `uid` or `username` in your query parameters.'
+      })
       return
     }
 
-    if (await hasRateLimit(req.uid, 'post')) {
-      res.send('You are being rate limited. Please wait a moment before making another request...')
+    if (await hasRateLimit(req.uid, 'get_posts')) {
+      res.send({
+        success: false,
+        message: 'You are being rate limited. Please wait a moment before making another request...'
+      })
       return
     }
 
@@ -34,6 +40,9 @@ export function register(app: FastifyInstance) {
       posts = result[0] as Post[]
     }
 
-    res.send(posts)
+    res.send({
+      success: true,
+      posts
+    })
   })
 }

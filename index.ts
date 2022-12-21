@@ -17,7 +17,10 @@ app.addHook('preValidation', async (req, res) => {
   const auth = await authenticateKey(body?.key || querystring?.key)
 
   if (isNaN(auth)) {
-    res.send('Welcome to the Botti API! You are not authenticated. Please sign up in order to get an API key :)')
+    res.send({
+      success: false,
+      message: 'Welcome to the Botti API! You are not authenticated. Please sign up in order to get an API key :)'
+    })
     return
   }
 
@@ -33,6 +36,8 @@ fs.readdirSync(__dirname + '/routes').forEach(async (file) => {
 })
 
 // Listen!
-app.listen({ port: 3000 }, () => {
+app.listen({ port: 3000 }, (e) => {
+  if (e) return console.error(e)
+
   console.log('Server up and running!')
 })

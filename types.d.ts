@@ -12,6 +12,10 @@ interface PostsQuery {
   limit?: number
 }
 
+interface PostCreationBody {
+  contents: string
+}
+
 interface Post {
   author: number
   contents: string
