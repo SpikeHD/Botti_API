@@ -13,12 +13,12 @@ export function register(app: FastifyInstance) {
       return
     }
 
-    if (!(body.uid || body.username)) {
+    if (!(body?.uid || body?.username)) {
       fail(res, 'Please provide a `uid` or `username` in your post body.')
       return
     }
 
-    if (body.uid) {
+    if (!isNaN(Number(body.uid))) {
       result = await client.query(
         'REPLACE INTO followers VALUES (?, ?)',
         [req.uid, body.uid]

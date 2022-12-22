@@ -16,9 +16,9 @@ export function register(app: FastifyInstance) {
       return ratelimit(res)
     }
 
-    if (query.uid) {
+    if (!isNaN(Number(query.uid))) {
       const result = await client.query(
-        'SELECT u.username, u.email, u.icon, u.bio, u.followers, u.following FROM following f, users u WHERE f.following=? AND u.uid=f.follower',
+        'SELECT u.username, u.email, u.icon, u.bio, u.followers, u.following FROM followers f, users u WHERE f.following=? AND u.uid=f.follower',
         [query.uid]
       )
 
@@ -26,10 +26,10 @@ export function register(app: FastifyInstance) {
       followers = Array.isArray(result[0]) && result[0][0]
     } else if (query.username) {
       const result = await client.query(
-        'SELECT u2.username, u2.email, u2.icon, u2.bio, u2.followers, u2.following FROM followers f, users u, users u2 WHERE p.following = u.uid AND u.username=? AND u2.uid=f.follower',
+        'SELECT u2.username, u2.email, u2.icon, u2.bio, u2.followers, u2.following FROM followers f, users u, users u2 WHERE f.following = u.uid AND u.username=? AND u2.uid=f.follower',
         [query.username]
       )
-      
+
       // @ts-expect-error shut up
       followers = Array.isArray(result[0]) && result[0][0]
     }

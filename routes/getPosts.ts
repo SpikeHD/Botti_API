@@ -17,7 +17,7 @@ export function register(app: FastifyInstance) {
       return ratelimit(res)
     }
 
-    if (query.uid) {
+    if (!isNaN(Number(query.uid))) {
       const result = await client.query(
         'SELECT author, contents, date_created, likes, comments FROM posts WHERE author=? LIMIT ?',
         [query.uid, limit]

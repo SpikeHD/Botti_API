@@ -16,7 +16,7 @@ export function register(app: FastifyInstance) {
       return ratelimit(res)
     }
 
-    if (query.uid) {
+    if (!isNaN(Number(query.uid))) {
       const result = await client.query(
         'SELECT uid, username, icon, bio, followers, following FROM users WHERE uid=?',
         [query.uid]

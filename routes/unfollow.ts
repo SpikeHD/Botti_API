@@ -7,7 +7,7 @@ export function register(app: FastifyInstance) {
     const body = req.body as FollowBody
     let result
 
-    if (!(body.uid || body.username)) {
+    if (!(body?.uid || body?.username)) {
       res.send({
         success: false,
         message: 'Please provide a `uid` or `username` in your post body.'
@@ -15,7 +15,7 @@ export function register(app: FastifyInstance) {
       return
     }
 
-    if (body.uid) {
+    if (!isNaN(Number(body.uid))) {
       result = await client.query(
         'DELETE FROM followers WHERE follower=? AND following=?',
         [req.uid, body.uid]

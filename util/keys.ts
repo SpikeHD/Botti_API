@@ -21,5 +21,5 @@ export async function authenticateKey(key: string) {
   const rows = await client.query('SELECT * FROM api_keys WHERE api_key=SHA2(?, 256)', key)
 
   // @ts-expect-error dont care
-  return Array.isArray(rows[0]) && rows[0][0].uid
+  return Array.isArray(rows[0]) && rows[0][0]?.uid
 }
