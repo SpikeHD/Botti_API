@@ -1,7 +1,7 @@
 import { FastifyInstance } from 'fastify'
 import { client } from '../util/mysql'
 import { hasRateLimit } from '../util/ratelimit'
-import { fail } from '../util/response'
+import { fail, ratelimit } from '../util/response'
 
 export function register(app: FastifyInstance) {
   app.post('/follow', async (req, res) => {
