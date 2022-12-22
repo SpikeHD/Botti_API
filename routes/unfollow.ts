@@ -1,18 +1,20 @@
 import { FastifyInstance } from 'fastify'
 import { client } from '../util/mysql'
 import { hasRateLimit } from '../util/ratelimit'
+import { fail, ratelimit } from '../util/response'
 
 export function register(app: FastifyInstance) {
   app.post('/unfollow', async (req, res) => {
     const body = req.body as FollowBody
     let result
 
-    if (!(body?.uid || body?.username)) {
-      res.send({
-        success: false,
-        message: 'Please provide a `uid` or `username` in your post body.'
-      })
+    if (await hasRateLimit(req.uid, 'follow')) {
+      ratelimit(res)
       return
+    }
+
+    if (!(body?.uid || body?.username)) {
+      return fail(res, 'Please provide a `uid` or `username` in your post body.')
     }
 
     if (!isNaN(Number(body.uid))) {

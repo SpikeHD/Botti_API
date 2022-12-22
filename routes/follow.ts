@@ -9,7 +9,7 @@ export function register(app: FastifyInstance) {
     let result
 
     if (await hasRateLimit(req.uid, 'follow')) {
-      fail(res, 'You are being rate limited. Please wait a moment before making another request...')
+      ratelimit(res)
       return
     }
 
