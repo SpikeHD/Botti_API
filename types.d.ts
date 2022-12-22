@@ -7,9 +7,14 @@ interface BaseQuery {
 }
 
 interface PostsQuery {
-  uid?: string
+  uid?: number
   username?: string
   limit?: number
+}
+
+interface UserQuery {
+  uid?: number
+  username?: string
 }
 
 interface PostCreationBody {
@@ -22,6 +27,15 @@ interface Post {
   date_created: Date
   likes: number
   comments: number
+}
+
+interface User {
+  uid: number
+  username: string
+  icon: string
+  bio: string
+  followers: number
+  following: number
 }
 
 interface RatelimitQueryResults {

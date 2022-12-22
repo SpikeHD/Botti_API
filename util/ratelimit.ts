@@ -3,6 +3,7 @@ import { client } from './mysql'
 const limits = {
   post: Number(process.env.POST_LIMIT) || 5000,
   get_posts: Number(process.env.POST_GET_LIMIT) || 5000,
+  profile: Number(process.env.PROFILE_LIMIT) || 5000,
 }
 
 const whitelist = [0]
