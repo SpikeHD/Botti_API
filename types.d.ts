@@ -43,3 +43,13 @@ interface RatelimitQueryResults {
   last_query: string
   type: string
 }
+
+interface FollowBody {
+  uid?: number
+  username?: string
+}
+
+interface FollowersQuery {
+  uid?: number
+  username?: string
+}

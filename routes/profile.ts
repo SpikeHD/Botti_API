@@ -1,3 +1,4 @@
+import { fail, ratelimit } from '../util/response'
 import { FastifyInstance } from 'fastify'
 import { client } from '../util/mysql'
 import { hasRateLimit } from '../util/ratelimit'
@@ -8,19 +9,11 @@ export function register(app: FastifyInstance) {
     let user: User | null = null
 
     if (!(query.uid || query.username)) {
-      res.send({
-        success: false,
-        message: 'Please provide a `uid` or `username` in your query parameters.'
-      })
-      return
+      return fail(res, 'Please provide a `uid` or `username` in your query parameters.')
     }
 
     if (await hasRateLimit(req.uid, 'profile')) {
-      res.send({
-        success: false,
-        message: 'You are being rate limited. Please wait a moment before making another request...'
-      })
-      return
+      return ratelimit(res)
     }
 
     if (query.uid) {
@@ -39,10 +32,7 @@ export function register(app: FastifyInstance) {
       user = Array.isArray(result[0]) ? result[0][0] as User : null
     }
 
-    if (!user) return res.send({
-      success: false,
-      message: 'Error getting user, do they exist?'
-    })
+    if (!user) return fail(res, 'Error getting user, do they exist?')
 
     res.send({
       success: true,

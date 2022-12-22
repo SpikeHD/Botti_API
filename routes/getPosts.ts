@@ -1,6 +1,7 @@
 import { FastifyInstance } from 'fastify'
 import { client } from '../util/mysql'
 import { hasRateLimit } from '../util/ratelimit'
+import { fail, ratelimit } from '../util/response'
 
 export function register(app: FastifyInstance) {
   app.get('/posts', async (req, res) => {
@@ -9,19 +10,11 @@ export function register(app: FastifyInstance) {
     let posts: Post[] = []
 
     if (!(query.uid || query.username)) {
-      res.send({
-        success: false,
-        message: 'Please provide a `uid` or `username` in your query parameters.'
-      })
-      return
+      return fail(res, 'Please provide a `uid` or `username` in your query parameters.')
     }
 
     if (await hasRateLimit(req.uid, 'get_posts')) {
-      res.send({
-        success: false,
-        message: 'You are being rate limited. Please wait a moment before making another request...'
-      })
-      return
+      return ratelimit(res)
     }
 
     if (query.uid) {
