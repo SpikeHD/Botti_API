@@ -11,9 +11,9 @@ export function register(app: FastifyInstance) {
       }
     }
   }, async (req, res) => {
-    const body = typeof req.body === 'string' ? JSON.parse(req.body) as LoginBody : req.body as LoginBody
+    const body = req.body as LoginBody
 
-    if (!(body.email || body.password)) {
+    if (!(body.email && body.password)) {
       return fail(res, 'Please provide both the email and password associated with the account.')
     }
 

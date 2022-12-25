@@ -58,3 +58,13 @@ interface LoginBody {
   email: string
   password: string
 }
+
+interface RegisterBody {
+  username: string
+  email: string
+  password: string
+}
+
+interface ConfirmBody {
+  code: string
+}

@@ -6,6 +6,8 @@ import fs from 'fs'
 import Fastify from 'fastify'
 import { authenticateKey } from './util/keys'
 
+const keyless = ['/register', '/login', '/confirm']
+
 const app = Fastify({
   logger: true
 })
@@ -31,8 +33,8 @@ const app = Fastify({
     const body = req.body as BaseReq
     const querystring = req.query as BaseReq
     
-    // Do not require API if the user is logging in, obviously
-    if (req.routerPath === '/login') return
+    // Do not require API if the user is logging in or registering, obviously
+    if (keyless.includes(req.routerPath)) return
 
     const auth = await authenticateKey(body?.key || querystring?.key)
 
@@ -45,6 +47,9 @@ const app = Fastify({
     }
 
     req.uid = auth
+
+    // JSON-ify body just in case
+    req.body = typeof req.body === 'string' ? JSON.parse(req.body) : req.body
   })
 
   // Go through each route and register it

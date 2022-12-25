@@ -17,6 +17,8 @@ export function generateAPIKey() {
  * @param key
  */
 export async function authenticateKey(key: string) {
+  if (!key) return 'Bad key'
+
   // If the key exists in the table, that's enough for us!
   const rows = await client.query('SELECT * FROM api_keys WHERE api_key=SHA2(?, 256)', key)
 
