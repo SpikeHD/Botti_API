@@ -1,18 +1,20 @@
 import { FastifyInstance } from 'fastify'
 import { client } from '../util/mysql'
-import { hasRateLimit } from '../util/ratelimit'
-import { fail, ratelimit } from '../util/response'
+import { fail } from '../util/response'
 
 export function register(app: FastifyInstance) {
-  app.post('/createPost', async (req, res) => {
+  app.post('/createPost', {
+    config: {
+      rateLimit: {
+        max: 2,
+        timeWindow: '1 minute'
+      }
+    }
+  }, async (req, res) => {
     const body = req.body as PostCreationBody
 
     if (!body.contents) {
       return fail(res, 'Please provide contents for the post.')
-    }
-
-    if (await hasRateLimit(req.uid, 'post')) {
-      return ratelimit(res)
     }
 
     const date = new Date()

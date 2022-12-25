@@ -1,10 +1,16 @@
 import { FastifyInstance } from 'fastify'
 import { client } from '../util/mysql'
-import { hasRateLimit } from '../util/ratelimit'
-import { fail, ratelimit } from '../util/response'
+import { fail } from '../util/response'
 
 export function register(app: FastifyInstance) {
-  app.get('/posts', async (req, res) => {
+  app.get('/posts', {
+    config: {
+      rateLimit: {
+        max: 10,
+        timeWindow: '1 minute'
+      }
+    }
+  }, async (req, res) => {
     const query = req.query as PostsQuery
     const limit = query.limit || 10
     let posts: Post[] = []
@@ -13,9 +19,6 @@ export function register(app: FastifyInstance) {
       return fail(res, 'Please provide a `uid` or `username` in your query parameters.')
     }
 
-    if (await hasRateLimit(req.uid, 'get_posts')) {
-      return ratelimit(res)
-    }
 
     if (!isNaN(Number(query.uid))) {
       const result = await client.query(

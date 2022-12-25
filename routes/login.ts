@@ -1,11 +1,17 @@
-import { fail, ratelimit } from '../util/response'
+import { fail } from '../util/response'
 import { FastifyInstance } from 'fastify'
 import { client } from '../util/mysql'
-import { hasRateLimit } from '../util/ratelimit'
 
 export function register(app: FastifyInstance) {
-  app.post('/login', async (req, res) => {
-    const body = req.body as LoginBody
+  app.post('/login', {
+    config: {
+      rateLimit: {
+        max: 3,
+        timeWindow: '1 minute'
+      }
+    }
+  }, async (req, res) => {
+    const body = typeof req.body === 'string' ? JSON.parse(req.body) as LoginBody : req.body as LoginBody
 
     if (!(body.email || body.password)) {
       return fail(res, 'Please provide both the email and password associated with the account.')
@@ -17,7 +23,7 @@ export function register(app: FastifyInstance) {
     )
 
     // @ts-expect-error shut up
-    if (Array.isArray(result[0]) && !result[0][0]?.uid) return fail(res, 'Error getting user, do they exist?')
+    if (Array.isArray(result[0]) && !result[0][0]?.uid) return fail(res, 'Incorrect credentials.')
 
     res.send({
       success: true,

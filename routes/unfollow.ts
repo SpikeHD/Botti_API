@@ -1,17 +1,18 @@
 import { FastifyInstance } from 'fastify'
 import { client } from '../util/mysql'
-import { hasRateLimit } from '../util/ratelimit'
-import { fail, ratelimit } from '../util/response'
+import { fail } from '../util/response'
 
 export function register(app: FastifyInstance) {
-  app.post('/unfollow', async (req, res) => {
+  app.post('/unfollow', {
+    config: {
+      rateLimit: {
+        max: 10,
+        timeWindow: '30 seconds'
+      }
+    }
+  }, async (req, res) => {
     const body = req.body as FollowBody
     let result
-
-    if (await hasRateLimit(req.uid, 'follow')) {
-      ratelimit(res)
-      return
-    }
 
     if (!(body?.uid || body?.username)) {
       return fail(res, 'Please provide a `uid` or `username` in your post body.')
