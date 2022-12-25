@@ -14,6 +14,10 @@ const app = Fastify({
 app.addHook('preValidation', async (req, res) => {
   const body = req.body as BaseReq
   const querystring = req.query as BaseReq
+  
+  // Do not require API if the user is logging in, obviously
+  if (req.routerPath === '/login') return
+
   const auth = await authenticateKey(body?.key || querystring?.key)
 
   if (isNaN(auth)) {
@@ -36,7 +40,7 @@ fs.readdirSync(__dirname + '/routes').forEach(async (file) => {
 })
 
 // Listen!
-app.listen({ port: 3000 }, (e) => {
+app.listen({ port: 4000 }, (e) => {
   if (e) return console.error(e)
 
   console.log('Server up and running!')

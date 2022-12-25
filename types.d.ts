@@ -53,3 +53,8 @@ interface FollowersQuery {
   uid?: number
   username?: string
 }
+
+interface LoginBody {
+  email: string
+  password: string
+}
