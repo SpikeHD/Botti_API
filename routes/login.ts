@@ -6,7 +6,7 @@ export function register(app: FastifyInstance) {
   app.post('/login', {
     config: {
       rateLimit: {
-        max: 3,
+        max: 5,
         timeWindow: '1 minute'
       }
     }

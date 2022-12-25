@@ -32,6 +32,9 @@ const app = Fastify({
   app.addHook('preValidation', async (req, res) => {
     const body = req.body as BaseReq
     const querystring = req.query as BaseReq
+
+    // JSON-ify body just in case
+    req.body = typeof req.body === 'string' ? JSON.parse(req.body) : req.body
     
     // Do not require API if the user is logging in or registering, obviously
     if (keyless.includes(req.routerPath)) return
@@ -48,8 +51,6 @@ const app = Fastify({
 
     req.uid = auth
 
-    // JSON-ify body just in case
-    req.body = typeof req.body === 'string' ? JSON.parse(req.body) : req.body
   })
 
   // Go through each route and register it
