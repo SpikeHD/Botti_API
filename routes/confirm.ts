@@ -2,6 +2,7 @@ import { fail } from '../util/response'
 import { FastifyInstance } from 'fastify'
 import { client } from '../util/mysql'
 import { sendConfirmationEmail } from '../util/mail'
+import { generateAPIKey } from '../util/keys'
 
 export function register(app: FastifyInstance) {
   app.post('/confirm', {
@@ -37,6 +38,15 @@ export function register(app: FastifyInstance) {
 
     // Set user to confirmed
     await client.query('UPDATE users SET confirmed=1 WHERE email=?', [email])
+
+    const uidResult = await client.query('SELECT uid FROM users WHERE email=?', [email])
+
+    if (!Array.isArray(uidResult[0])) fail(res, 'Account confirmed, but API key encountered an error during creation. Sucks to suck I guess :/')
+
+    // @ts-expect-error shut up
+    const uid = uidResult[0][0]?.uid
+
+    await client.query('INSERT INTO api_keys VALUES (?, ?)', [uid, generateAPIKey()])
 
     res.send({
       success: true,
